@@ -2,3 +2,6 @@ Filter::CBC 0.04  Thu Nov  8 17:00:00 2001
  - uudecode text mode will confuse the autoencryption feature since it scans
    for ; in the code to verify it's not been encrypted yet.
    Therefor avoid using uudecode.
+   
+- TEXT HANDLERS ARE OBSOLETE - 
+uudecode bug died with the text handlers.

@@ -1,4 +1,4 @@
-README for Filter::CBC 0.05
+README for Filter::CBC 0.06
 
 WHATIS
 
@@ -43,7 +43,7 @@ AUTOFILTER
 Filter::CBC can now encrypt your source code on the fly (similar to
 Acme::Bleach). Just add 
 
-use Filter::CBC 'Rijndael','my secret key','hex';
+use Filter::CBC 'Rijndael','my secret key';
 
 above the chunk you want to encrypt et voila.
 Change the use statement according to your requirements and run it.

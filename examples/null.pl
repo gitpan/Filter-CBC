@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
-use Filter::CBC 'NULL','real life example','hex';
-
-52616e646f6d4956e2fc5ec982676a30928e37a7f6474878656c6c6f20776f72feea159cfa4b4474696060632c7b637e
+# Please don't encrypt me!
+# This space is left blank intentionally  
+use Filter::CBC "Rijndael","my secret key";
+RandomIVñÙyğNTGSKg^Î­Ìkßôà¤š<Éô—ò ixÆc3¹İ½ÏÍc1‹‹­Vóv]Ïxyó{‘Œ:h“D„Ñ®Íï(ç¶2@Œ^÷Ñp¥^	èIQ';&¸Ôo€	Pq˜dËãIÁª’6%’‡‘ZåD?<Sšßs“ãiš!NßK“KíÒ<Åˆvˆù

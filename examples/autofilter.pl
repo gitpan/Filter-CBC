@@ -2,7 +2,7 @@
 
 # Please don't encrypt me!
   
-use Filter::CBC "Rijndael","my secret key","hex";
+use Filter::CBC "Rijndael","my secret key";
 
 # This file will be encrypted and overwritten.
 # Make backups, damnit!

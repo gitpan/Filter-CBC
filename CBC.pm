@@ -1,7 +1,7 @@
 package Filter::CBC;
 
 use strict;
-use vars qw($VERSION $cipher $textmode %Algorithms);
+use vars qw($VERSION $cipher %Algorithms);
 use Filter::Util::Call ;
 use Crypt::CBC;
 
@@ -16,14 +16,15 @@ my %Algorithms =
  "NULL"=>"NULL",
  "TEA"=>"TEA");
 
-$VERSION = '0.05';
+$VERSION = '0.06';
+
+my $blank = "This space is left blank intentionally";
 
 sub import {
 my ($type) = shift @_;
 my $algorithm = shift || "Rijndael";
 $algorithm = $Algorithms{uc $algorithm} || $algorithm;
-my $key = shift || "This space is left blank intentionally";
-$textmode = shift if @_;
+my $key = shift || $blank;
 my ($ref) = [] ;
 $cipher = new Crypt::CBC($key,$algorithm);
 filter_add(bless $ref) ;
@@ -33,20 +34,19 @@ sub filter {
 my ($self) = @_ ;
 my ($status) ;
 if (($status = filter_read()) > 0)
-{ s/([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg if $textmode eq "hex";
-  #$_ = unpack("u",$_) if $textmode eq "uudecode";
-  $_ = $cipher->decrypt($_);
+{ $_ = $cipher->decrypt($_);
 }
 $status ;
 }
 
 open(F,"<$0") || die $!;
-my ($past_use,$textmode,$key,$algorithm);
+my ($past_use,$key,$algorithm,$encrypted);
 my @code = ();
 while(<F>)
 { $|++;
+  if (/^\# $blank/ && !$past_use) { last; }
   if (!$past_use)
-  { ($algorithm,$key,undef,$textmode) = /use Filter\:\:CBC\s*[\'\"](\w*)[\'\"]\s*\,\s*[\'\"]([^\'\"]*)[\'\"](\,[\'\"](\w*)[\'\"])?/; }
+  { ($algorithm,$key) = /use Filter\:\:CBC\s*[\'\"](\w*)[\'\"]\s*\,\s*[\'\"]([^\'\"]*)[\'\"].*?/; }
   if (defined $algorithm && defined $key && !$past_use) { $past_use++; push(@code ,$_); next;}
   if ($past_use && defined $key && defined $algorithm)
   { my (@foo) = <F>;
@@ -54,19 +54,17 @@ while(<F>)
     my $code = join("",@foo);
     $algorithm ||= "Rijndael";
     $algorithm = $Algorithms{uc $algorithm} || $algorithm;
-    $key ||= "This space is left blank intentionally";
-    if ($code =~ /\;/)
-    { my $cipher = new Crypt::CBC($key,$algorithm);
-      $code = $cipher->encrypt($code);
-      if ($textmode eq "hex") { $code = unpack("H*",$code); }
-      open(OUTFILE,">$0.bak") || die $!;
-      print OUTFILE @code,$code;
-      close(OUTFILE);
-      unlink("$0") || die $!;
-      rename ("$0.bak",$0);
-      exit;
-    }
-  } 
+    $key ||= $blank;
+    my $cipher = new Crypt::CBC($key,$algorithm);
+    $code = $cipher->encrypt($code);
+    splice(@code,-2,0,"# $blank");
+    open(OUTFILE,">$0.bak") || die $!;
+    print OUTFILE @code,$code;
+    close(OUTFILE);
+    unlink("$0") || die $!;
+    rename ("$0.bak",$0);
+    exit;
+  }
   else { push(@code,$_); }
 }
 close(F);
@@ -81,21 +79,9 @@ Filter::CBC - Source filter for Cipher Block Chaining
 
 =head1 SYNOPSIS
 
-  use Filter::Hex; use Filter::CBC "Rijndael","my secret key";
-
-  52616e646f6d4956d6da837a7590d113f67d363b95eae044ac74937c2b7fc9dbaffb59656abebf5b69a50559bc9b4233
-
-  -or-
-
-  use Filter::CBC "Rijndael","my secret key","hex";
-
-  52616e646f6d4956d6da837a7590d113f67d363b95eae044ac74937c2b7fc9dbaffb59656abebf5b69a50559bc9b4233
-
-  -or-
-
   # Please don't encrypt me!
 
-  use Filter::CBC "Rijndael","my secret key","hex";
+  use Filter::CBC "Rijndael","my secret key";
 
   # This file will be encrypted and overwritten.
   # Make backups, damnit!
@@ -106,7 +92,7 @@ Filter::CBC - Source filter for Cipher Block Chaining
 
   # Please don't encrypt me!
 
-  use Filter::CBC "","","hex";
+  use Filter::CBC "","";
 
   # This file will be encrypted and overwritten.
   # Make backups, damnit!
@@ -135,7 +121,7 @@ You're source file is overwrittten when you're using the autoefilter feature.
 
 =head1 PARAMETERS
 
-The three parameters that can be passed along are :
+The two parameters that can be passed along are :
 
 =over 2
 
@@ -146,10 +132,6 @@ This parameter indicates what CBC encryption routine to use. Possible values are
 =item Keyphrase
 
 This parameter is the keyphrase for the encryption routine described as previous parameter.
-
-=item Text Handler
-
-This optional parameter is the textmode. See INTERNAL TEXT HANDLERS
 
 =back
 
@@ -200,39 +182,16 @@ This is the TEA routine. You need Crypt::TEA for this.
 
 But any CBC Compatible routine will work.
 
-=head1 INTERNAL TEXT HANDLERS
-
-The following parameters can be passed as part of the internal text handling.
-
-=over 2
-
-=item hex
-
-If the encrypted code is converted to hex values, you need to use this
-parameter first. Source filters can't handle binary data properly.
-
-=item uudecode
-
-uudecoding has been disabled in the current source tree.
-
-If the encrypted code is uuencoded, you need to use this parameter first. 
-Source filters can't handle binary data properly. Using this textmode is not 
-recommended since the autofilter feature scans for keys which also are used 
-in the uudecode algorithm.
-
 =back
 
-If you don't pass a parameter for text handling, Filter::CBC will try to
-decrypt the code anyway. If the encrypted code is clean enough (for example
-when using Rot13 encryption), Text handling isn't necessary. In all other
-cases you need to stack a filter so the encrypted code is handled properly.
+=head1 TEXT HANDLERS
 
-The following example uses Filter::Hex instead of the internal Text handler
-for hex converted encrypted code.
+As Paul Marquess noted, Filter has no problems with binary data. The text handlers
+are totally unnecesary. I therefor removed them. You can still use hex encoding by using
+the Filter::Hex module provided in the obsolete directory. If you have code that used the 
+older version of Filter::CBC, I recommend stacking the HEX filter. Edit the use statement as follows :
 
   use Filter::Hex; use Filter::CBC "Rijndael","my secret key";
-
-  52616e646f6d4956d6da837a7590d113f67d363b95eae044ac74937c2b7fc9dbaffb59656abebf5b69a50559bc9b4233
 
 =head1 AUTOFILTERING
 
@@ -240,7 +199,7 @@ Since Filter::CBC 0.04, using code2cbc isn't required anymore. Filter::CBC can e
 on the fly if it's not yet encrypted. Be warned that your source file is overwritten. You can use
 cbc2code.pl to decrypt your encrypted code. BACKUP!
 
-  use Filter::CBC "Rijndael","my secret key","hex";
+  use Filter::CBC "Rijndael","my secret key";
 
   # This file will be encrypted and overwritten.
   # Make backups, damnit!
@@ -248,7 +207,8 @@ cbc2code.pl to decrypt your encrypted code. BACKUP!
   print "Don't try this at home, kids !";
 
 This code will be encrypted the first time you run it. Everything before the 'use Filter::CBC' line is kept
-intact.
+intact. Filter::CBC sets a 'marker' so that double encryption doesn't occur.
+If you see a comment stating 'This space is left blank intentionally', ignore it.
 
 =head1 DEFAULTS
 
@@ -270,7 +230,7 @@ Filter::CBC will use the following line when no keyphrase is defined :
 
 =over 5
 
-    This space is left blank intentionally
+This space is left blank intentionally
 
 =back
 
@@ -309,11 +269,14 @@ Filter::CBC requires the following modules (depending on your needs)
 Alot of thanks to Ray Brinzer (Petruchio on Perlmonks) for giving an example
 on how to handle parameters with use.
 
+Paul Marquess for writing Filter and pointing out that Filter does what it should and not what I expect it to.
+
+A bunch of monks at Perlmonks for giving some excellent and well appreciated feedback on 
+detecting code. Thank you Blakem, Petral, Chipmunk, Tilly, Jepri and Zaxo.
+
 =head1 TODO
 
 A bit less then first release but still plenty.
-
-Work around the uudecode bug.
 
 =head1 DISCLAIMER
 
@@ -322,7 +285,7 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.05.
+This is Filter::CBC 0.06.
 
 =head1 AUTHOR
 

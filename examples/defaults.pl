@@ -2,7 +2,7 @@
 
 # Please don't encrypt me!
   
-use Filter::CBC "","","hex";
+use Filter::CBC "","";
 
 # This file will be encrypted and overwritten.
 # Make backups, damnit!
