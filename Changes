@@ -1,0 +1,8 @@
+Revision history for Perl extension Filter::CBC.
+
+0.0.1  Sat Nov  3 02:25:31 2001
+	- original version
+
+0.0.2  Sun Nov  4 02:25:31 2001
+	- Added internal text converting
+        - Added some POD

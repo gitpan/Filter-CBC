@@ -1,0 +1,10 @@
+CBC.pm
+Changes
+Makefile.PL
+MANIFEST
+test.pl
+code2cbc.pl
+examples/blowfish.pl
+examples/rijndael.pl
+examples/des.pl
+examples/idea.pl
