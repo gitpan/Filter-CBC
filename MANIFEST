@@ -2,9 +2,13 @@ CBC.pm
 Changes
 Makefile.PL
 MANIFEST
-test.pl
 code2cbc.pl
 examples/blowfish.pl
-examples/rijndael.pl
+examples/des_ede3.pl
 examples/des.pl
+examples/gost.pl
 examples/idea.pl
+examples/null.pl
+examples/rijndael.pl
+examples/tea.pl
+examples/twofish.pl

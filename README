@@ -1,0 +1,61 @@
+README for Filter::CBC 0.03
+
+WHATIS
+
+Filter::CBC is a Perl Source Filter that uses CBC (Cipher Block Chaining) to 
+encrypt/decrypt your sourcecode during runtime.
+
+It uses the Filter module by Paul Marquess and Crypt::CBC by Lincoln Stein.
+
+
+INSTALLING
+
+Filter::CBC can be installed easily by using the CPAN module.
+
+perl -MCPAN -e"install Filter::CBC"
+
+or manually by untarring the archive and running the following commands.
+
+    perl Makefile.PM
+    make
+    make install
+
+    
+TESTING
+
+This module has been tested on Linux 2.2.x (x86) with Perl 5.005_03.
+
+
+REQUIREMENTS
+
+Filter::CBC requires at least
+    Filter - http://search.cpan.org/search?dist=Filter
+and
+    Crypt::CBC - http://search.cpan.org/search?dist=Crypt-CBC
+
+Also any Block Cipher routine you might want to use.
+Among those compatible with CBC are :
+
+    Crypt::Rijndael - http://search.cpan.org/search?dist=Crypt-Rijndael
+
+    Crypt::DES - http://search.cpan.org/search?dist=Crypt-DES
+
+    Crypt::IDEA - http://search.cpan.org/search?dist=Crypt-IDEA
+
+    Crypt::Blowfish - http://search.cpan.org/search?dist=Crypt-Blowfish
+
+    Crypt::GOST - http://search.cpan.org/search?dist=Crypt-GOST
+
+    Crypt::DES_EDE3 - http://search.cpan.org/search?dist=Crypt-DES_EDE3
+
+    Crypt::Twofish - http://search.cpan.org/search?dist=Crypt-Twofish
+
+    Crypt::NULL - http://search.cpan.org/search?dist=Crypt-NULL
+
+    Crypt::TEA - http://search.cpan.org/search?dist=Crypt-TEA
+
+
+AUTHOR
+
+Filter::CBC was written by Hendrik Van Belleghem. Suggestions & Questions
+are welcome at   beatnik - at - quickndirty - dot - org.

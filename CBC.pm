@@ -5,7 +5,7 @@ use vars qw($VERSION $cipher $textmode);
 use Filter::Util::Call ;
 use Crypt::CBC;
 
-$VERSION = '0.0.2';
+$VERSION = '0.03';
 
 sub import {
 my ($type) = shift @_;
@@ -64,43 +64,70 @@ Speed
 Source filters are slow. VERY Slow. Filter::CBC is not an exception.
 Well uhm kinda. Filter::CBC is even slower. Be warned, be VERY VERY warned.
 
+=head1 PARAMETERS
+
+The three parameters that can be passed along are :
+
+=over 2
+
+=item CBC Handler
+
+This parameter indicates what CBC encryption routine to use. Possible values are described in the next section.
+
+=item Keyphrase
+
+This parameter is the keyphrase for the encryption routine described as previous parameter.
+
+=item Text Handler
+
+This optional parameter is the textmode. See INTERNAL TEXT HANDLERS
+
+=back
+
 =head1 INTERNAL CBC HANDLERS
 
 The following parameters can be passed as part of the CBC encryption routine
 
-=item Rijndael
+=over 2
 
-=over 3
+=item Rijndael
 
 This is the AES (Advanced Encryption Scheme) routine. You need 
 Crypt::Rijndael for this.
 
-=back 3
-
 =item DES
-
-=over 3
 
 This is the DES routine. You need Crypt::DES for this.
 
-=back 3
-
 =item IDEA
-
-=over 3
 
 This is the IDEA routine. You need Crypt::IDEA for this.
 
-=back 3
-
 =item Blowfish
-
-=over 3
 
 This is the Blowfish routine. You need Crypt::Blowfish for this.
 
-=back 3
+=item GOST
 
+This is the GOST routine. You need Crypt::GOST for this.
+
+=item DES_EDE3
+
+This is the Triple DES routine. You need Crypt::DES_EDE3 for this.
+
+=item Twofish
+
+This is the Twofish routine. You need Crypt::Twofish for this.
+
+=item NULL
+
+This is the NULL routine. You need Crypt::NULL for this.
+
+=item TEA
+
+This is the TEA routine. You need Crypt::TEA for this.
+
+=back
 
 But any CBC Compatible routine will work.
 
@@ -108,23 +135,19 @@ But any CBC Compatible routine will work.
 
 The following parameters can be passed as part of the internal text handling.
 
-=item hex
+=over 2
 
-=over 3
+=item hex
 
 If the encrypted code is converted to hex values, you need to use this
 parameter first. Source filters can't handle binary data properly.
 
-=back 3
-
 =item uudecode
-
-=over 3
 
 If the encrypted code is uuencoded, you need to use this parameter first. 
 Source filters can't handle binary data properly.
 
-=back 3
+=back
 
 If you don't pass a parameter for text handling, Filter::CBC will try to
 decrypt the code anyway. If the encrypted code is clean enough (for example
@@ -142,6 +165,8 @@ for hex converted encrypted code.
 
 Filter::CBC requires the following modules (depending on your needs)
 
+=over 3
+
 =item Filter::Util::Call
 
 =item Crypt::CBC
@@ -153,6 +178,18 @@ Filter::CBC requires the following modules (depending on your needs)
 =item Crypt::IDEA
 
 =item Crypt::Blowfish
+
+=item Crypt::GOST
+
+=item Crypt::DES_EDE3
+
+=item Crypt::Twofish
+
+=item Crypt::NULL
+
+=item Crypt::TEA
+
+=back
 
 =head1 THANKS A MILLION
 
@@ -170,7 +207,7 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.0.2.
+This is Filter::CBC 0.03.
 
 =head1 AUTHOR
 
@@ -180,19 +217,29 @@ Hendrik Van Belleghem (beatnik@quickndirty.org)
 
 GNU & GPL - http://www.gnu.org/copyleft/gpl.html
 
-Filter::Util::Call (http://search.cpan.org/search?dist=Filter)
+Filter::Util::Call - http://search.cpan.org/search?dist=Filter
 
-Crypt::CBC (http://search.cpan.org/search?dist=Crypt-CBC)
+Crypt::CBC - http://search.cpan.org/search?dist=Crypt-CBC
 
-Crypt::Rijndael (http://search.cpan.org/search?dist=Crypt-Rijndael)
+Crypt::Rijndael - http://search.cpan.org/search?dist=Crypt-Rijndael
 
-Crypt::DES (http://search.cpan.org/search?dist=Crypt-DES)
+Crypt::DES - http://search.cpan.org/search?dist=Crypt-DES
 
-Crypt::IDEA (http://search.cpan.org/search?dist=Crypt-IDEA)
+Crypt::IDEA - http://search.cpan.org/search?dist=Crypt-IDEA
 
-Crypt::Blowfish (http://search.cpan.org/search?dist=Crypt-Blowfish)
+Crypt::Blowfish - http://search.cpan.org/search?dist=Crypt-Blowfish
+
+Crypt::GOST - http://search.cpan.org/search?dist=Crypt-GOST
+
+Crypt::DES_EDE3 - http://search.cpan.org/search?dist=Crypt-DES_EDE3
+
+Crypt::Twofish - http://search.cpan.org/search?dist=Crypt-Twofish
+
+Crypt::NULL - http://search.cpan.org/search?dist=Crypt-NULL
+
+Crypt::TEA - http://search.cpan.org/search?dist=Crypt-TEA
 
 Paul Marquess' article
-on Source Filters (http://www.samag.com/documents/s=1287/sam03030004/)
+on Source Filters - http://www.samag.com/documents/s=1287/sam03030004/
 
 =cut
