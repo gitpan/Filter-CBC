@@ -18,7 +18,7 @@ my %Ciphers =
  "TEA"=>"TEA",
  "TWOFISH"=>"Twofish",);
 
-$VERSION = '0.08';
+$VERSION = '0.09';
 
 my $blank = "This space is left blank intentionally";
 
@@ -43,6 +43,7 @@ if (defined $algorithm && defined $key)
       splice(@CODE,-2,0,"# $blank");
       $code = $cipher->encrypt($code);
       open(OUTFILE,">$0.bak") || die $!;
+      binmode(OUTFILE);
       print OUTFILE @CODE,$code;
       close(OUTFILE);
       close(F);
@@ -296,7 +297,7 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.08
+This is Filter::CBC 0.09
 
 =head1 AUTHOR
 

@@ -9,3 +9,7 @@ uudecode bug died with the text handlers.
 Filter::CBC 0.07 Fri Dec 14 20:40:00 2001
 - Decrypting fails caused by line end not being set properly.
   Should be ok now.
+  
+Filter::CBC 0.08 Thu Feb 14 21:00:00 2002 (Yes, VALENTINES DAY)
+- Fixed \x bug again, I hope for good this time
+- Fixed NULL example

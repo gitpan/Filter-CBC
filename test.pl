@@ -7,7 +7,6 @@
 # (It may become useful if the test is moved to ./t subdirectory.)
 
 BEGIN { $| = 1; print "1..1\n"; }
-# This space is left blank intentionally
-END {print "not ok 1\n" unless $loaded;}
+# This space is left blank intentionallyEND {print "not ok 1\n" unless $loaded;}
 use Filter::CBC 'Rijndael','Filter::CBC test';
-RandomIV©ç½xÐO)QÛr‰ð<;ó`C"Ò¡gSVä›ëH%”ð7e@V¸ï
+RandomIV‘X"`!éèr¿1¹ˆ÷-Q@«Ã\rTW+UjÍ{°—qåöt©êküZ
