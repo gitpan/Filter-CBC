@@ -9,5 +9,6 @@ WriteMakefile(
          'Crypt::CBC'         => '1.25',
 	 'Crypt::Rijndael'    => '0.04',
      },
+     'dist' => {COMPRESS=>'gzip',SUFFIX=>'gz'},
 );
 

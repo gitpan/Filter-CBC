@@ -1,32 +1,57 @@
 package Filter::CBC;
 
 use strict;
-use vars qw($VERSION $cipher %Algorithms);
+use vars qw($VERSION $cipher %Ciphers);
 use Filter::Util::Call ;
 use Crypt::CBC;
 
-my %Algorithms =
-("RIJNDAEL"=>"Rijndael",
+my %Ciphers =
+("BLOWFISH"=>"Blowfish",
  "DES"=>"DES",
- "IDEA"=>"IDEA",
- "BLOWFISH"=>"Blowfish",
- "GOST"=>"GOST",
  "DES_EDE3"=>"DES_EDE3",
- "TWOFISH"=>"Twofish",
+ "GOST"=>"GOST",
+ "IDEA"=>"IDEA",
  "NULL"=>"NULL",
- "TEA"=>"TEA");
+ "RC6"=>"RC6",
+ "RIJNDAEL"=>"Rijndael",
+ "SERPENT"=>"Serpent",
+ "TEA"=>"TEA",
+ "TWOFISH"=>"Twofish",);
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 my $blank = "This space is left blank intentionally";
 
 sub import {
 my ($type) = shift @_;
 my $algorithm = shift || "Rijndael";
-$algorithm = $Algorithms{uc $algorithm} || $algorithm;
+$algorithm = $Ciphers{uc $algorithm} || $algorithm;
 my $key = shift || $blank;
-my ($ref) = [] ;
+my ($ref) = [];
 $cipher = new Crypt::CBC($key,$algorithm);
+if (defined $algorithm && defined $key)
+{ open(F,"<$0") || die $!;
+  flock(F,2); seek(F,0,0);
+  my @CODE = ();
+  my $past_use;
+  while(<F>)
+  { if (/^\# $blank/ && !$past_use) { close(F); last; }
+    if (/use Filter\:\:CBC/) { push(@CODE,$_); $past_use++; next; }
+    if (!$past_use) { push(@CODE,$_); }
+    else 
+    { my $code = $_; local $/ = undef; $code .= <F>; 
+      splice(@CODE,-2,0,"# $blank");
+      $code = $cipher->encrypt($code);
+      open(OUTFILE,">$0.bak") || die $!;
+      print OUTFILE @CODE,$code;
+      close(OUTFILE);
+      close(F);
+      unlink("$0") || die $!;
+      rename ("$0.bak",$0) || die $!;
+      exit;
+    }
+  }
+}
 filter_add(bless $ref) ;
 }
 
@@ -38,36 +63,6 @@ if (($status = filter_read()) > 0)
 }
 $status ;
 }
-
-open(F,"<$0") || die $!;
-my ($past_use,$key,$algorithm,$encrypted);
-my @code = ();
-while(<F>)
-{ $|++;
-  if (/^\# $blank/ && !$past_use) { last; }
-  if (!$past_use)
-  { ($algorithm,$key) = /use Filter\:\:CBC\s*[\'\"](\w*)[\'\"]\s*\,\s*[\'\"]([^\'\"]*)[\'\"].*?/; }
-  if (defined $algorithm && defined $key && !$past_use) { $past_use++; push(@code ,$_); next;}
-  if ($past_use && defined $key && defined $algorithm)
-  { my (@foo) = <F>;
-    unshift (@foo,$_);
-    my $code = join("",@foo);
-    $algorithm ||= "Rijndael";
-    $algorithm = $Algorithms{uc $algorithm} || $algorithm;
-    $key ||= $blank;
-    my $cipher = new Crypt::CBC($key,$algorithm);
-    $code = $cipher->encrypt($code);
-    splice(@code,-2,0,"# $blank");
-    open(OUTFILE,">$0.bak") || die $!;
-    print OUTFILE @code,$code;
-    close(OUTFILE);
-    unlink("$0") || die $!;
-    rename ("$0.bak",$0);
-    exit;
-  }
-  else { push(@code,$_); }
-}
-close(F);
 
 1;
 __END__
@@ -102,7 +97,6 @@ Filter::CBC - Source filter for Cipher Block Chaining
   # Default keyphrase is : This space is left blank intentionally
   print "Don't try this at home, kids !";
 
-
 =head1 DESCRIPTION
 
 Filter::CBC is a Source filter that uses Cipher Block Chaining (CBC) to
@@ -111,13 +105,22 @@ output. The textmode bypasses this obstacle, by converting the data to less scar
 
 =head1 DOWNSIDES
 
+=over 3
+
 =item *
+
 Source filters are slow. VERY Slow. Filter::CBC is not an exception.
 Well uhm kinda. Filter::CBC is even slower. Be warned, be VERY VERY warned.
 
+=back
+
+=over 3
+
 =item *
+
 You're source file is overwrittten when you're using the autoefilter feature.
 
+=back
 
 =head1 PARAMETERS
 
@@ -178,11 +181,18 @@ This is the NULL routine. You need Crypt::NULL for this.
 
 This is the TEA routine. You need Crypt::TEA for this.
 
+=item RC6
+
+This is the RC6 routine. You need Crypt::RC6 for this.
+
+=item Serpent
+
+This is the Serpent routine. You need Crypt::Serpent for this.
+(Untested)
+
 =back
 
 But any CBC Compatible routine will work.
-
-=back
 
 =head1 TEXT HANDLERS
 
@@ -216,23 +226,19 @@ If you see a comment stating 'This space is left blank intentionally', ignore it
 
 =item Encryption routine
 
-=back
-
 Filter::CBC will use Rijndael when no encryption algorithm is defined.
+
+=back
 
 =over 3
 
 =item Keyphrase
 
-=back
-
 Filter::CBC will use the following line when no keyphrase is defined :
 
-=over 5
-
-This space is left blank intentionally
-
 =back
+
+I<This space is left blank intentionally>
 
 =head1 REQUIREMENTS
 
@@ -262,6 +268,10 @@ Filter::CBC requires the following modules (depending on your needs)
 
 =item Crypt::TEA
 
+=item Crypt::RC6
+
+=item Crypt::Serpent
+
 =back
 
 =head1 THANKS A MILLION
@@ -285,7 +295,7 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.06.
+This is Filter::CBC 0.07
 
 =head1 AUTHOR
 
@@ -316,6 +326,10 @@ Crypt::Twofish - http://search.cpan.org/search?dist=Crypt-Twofish
 Crypt::NULL - http://search.cpan.org/search?dist=Crypt-NULL
 
 Crypt::TEA - http://search.cpan.org/search?dist=Crypt-TEA
+
+Crypt::RC6 - http://search.cpan.org/search?dist=Crypt-RC6
+
+Crypt::Serpent - http://search.cpan.org/search?dist=Crypt-Serpent
 
 Paul Marquess' article
 on Source Filters - http://www.samag.com/documents/s=1287/sam03030004/

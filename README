@@ -1,4 +1,4 @@
-README for Filter::CBC 0.06
+README for Filter::CBC 0.07
 
 WHATIS
 
@@ -83,6 +83,9 @@ Among those compatible with CBC are :
 
     Crypt::TEA - http://search.cpan.org/search?dist=Crypt-TEA
 
+    Crypt::RC6 - http://search.cpan.org/search?dist=Crypt-RC6
+
+    Crypt::Serpent - http://search.cpan.org/search?dist=Crypt-Serpent
 
 AUTHOR
 

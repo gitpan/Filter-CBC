@@ -35,7 +35,6 @@ while(@ARGV) {
  die "File $file is a directory !" unless !-d $file;
  
  open(F,"<$file") || die $!;
- warn $file;
  my ($past_use,$key,$algorithm,$found);
  $found = 0;
  my @code = ();
