@@ -15,3 +15,8 @@ Revision history for Perl extension Filter::CBC.
 0.04  Thu Nov  8 17:00:00 2001
 	- Added autoencryption feature (BIG CHANGE)
         - Added cbc2code script
+
+0.05  Fri Nov  9 23:00:00 2001
+	- Added default keyphrases & default encryption routines
+	- Cleaned up Package to improve CPANability
+	

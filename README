@@ -1,4 +1,4 @@
-README for Filter::CBC 0.04
+README for Filter::CBC 0.05
 
 WHATIS
 
@@ -18,6 +18,7 @@ or manually by untarring the archive and running the following commands.
 
     perl Makefile.PM
     make
+    make test
     make install
 
     
@@ -32,12 +33,12 @@ Examples are included for all the CBC compatible encryption routines.
 
 The code2cbc.pl script can encrypt your code by asking a number of simple
 questions. The autoencryption feature does the same thing, without the
-questions.
+questions. code2cbc.pl can be found in the obsolete directory.
 
 The cbc2code.pl script can decrypt encrypted scripts.
 
 
-AUTOENCRYPTION
+AUTOFILTER
 
 Filter::CBC can now encrypt your source code on the fly (similar to
 Acme::Bleach). Just add 
@@ -48,14 +49,18 @@ above the chunk you want to encrypt et voila.
 Change the use statement according to your requirements and run it.
 Filter::CBC will now encrypt the source and exit. Your code will not
 be executed at that time. PLEASE backup your code before running it.
+PRETTY PLEASE.
 
 
 REQUIREMENTS
 
 Filter::CBC requires at least
+
     Filter - http://search.cpan.org/search?dist=Filter
-and
+
     Crypt::CBC - http://search.cpan.org/search?dist=Crypt-CBC
+
+    Crypt::Rijndael - http://search.cpan.org/search?dist=Crypt-Rijndael
 
 Also any Block Cipher routine you might want to use.
 Among those compatible with CBC are :
@@ -83,3 +88,5 @@ AUTHOR
 
 Filter::CBC was written by Hendrik Van Belleghem. Suggestions & Questions
 are welcome at   beatnik - at - quickndirty - dot - org.
+
+Yes, I love fanmail! No, I don't like spam.

@@ -6,5 +6,5 @@ use Filter::CBC "Rijndael","my secret key","hex";
 
 # This file will be encrypted and overwritten.
 # Make backups, damnit!
-# Autoencryption example
+# Autofilter example
 print "Don't try this at home, kids !";

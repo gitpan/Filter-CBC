@@ -4,4 +4,10 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'	=> 'Filter::CBC',
     'VERSION_FROM' => 'CBC.pm', # finds $VERSION
+    'PREREQ_PM' => {
+         'Filter::Util::Call' => '1.05',
+         'Crypt::CBC'         => '1.25',
+	 'Crypt::Rijndael'    => '0.04',
+     },
 );
+

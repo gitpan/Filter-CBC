@@ -4,8 +4,7 @@ Changes
 Makefile.PL
 MANIFEST
 cbc2code.pl
-code2cbc.pl
-examples/autoencrypt.pl
+examples/autofilter.pl
 examples/blowfish.pl
 examples/des_ede3.pl
 examples/des.pl
@@ -15,3 +14,5 @@ examples/null.pl
 examples/rijndael.pl
 examples/tea.pl
 examples/twofish.pl
+obsolete/Hex.pm
+obsolete/code2cbc.pl

@@ -1,16 +1,28 @@
 package Filter::CBC;
 
 use strict;
-use vars qw($VERSION $cipher $textmode);
+use vars qw($VERSION $cipher $textmode %Algorithms);
 use Filter::Util::Call ;
 use Crypt::CBC;
 
-$VERSION = '0.04';
+my %Algorithms =
+("RIJNDAEL"=>"Rijndael",
+ "DES"=>"DES",
+ "IDEA"=>"IDEA",
+ "BLOWFISH"=>"Blowfish",
+ "GOST"=>"GOST",
+ "DES_EDE3"=>"DES_EDE3",
+ "TWOFISH"=>"Twofish",
+ "NULL"=>"NULL",
+ "TEA"=>"TEA");
+
+$VERSION = '0.05';
 
 sub import {
 my ($type) = shift @_;
-my $algorithm = shift;
-my $key = shift;
+my $algorithm = shift || "Rijndael";
+$algorithm = $Algorithms{uc $algorithm} || $algorithm;
+my $key = shift || "This space is left blank intentionally";
 $textmode = shift if @_;
 my ($ref) = [] ;
 $cipher = new Crypt::CBC($key,$algorithm);
@@ -22,30 +34,36 @@ my ($self) = @_ ;
 my ($status) ;
 if (($status = filter_read()) > 0)
 { s/([a-fA-F0-9][a-fA-F0-9])/pack("C", hex($1))/eg if $textmode eq "hex";
-  $_ = unpack("u",$_) if $textmode eq "uudecode";
+  #$_ = unpack("u",$_) if $textmode eq "uudecode";
   $_ = $cipher->decrypt($_);
 }
 $status ;
 }
 
-open(F,$0) || die $!;
+open(F,"<$0") || die $!;
 my ($past_use,$textmode,$key,$algorithm);
 my @code = ();
 while(<F>)
-{ if (!$past_use)
-  { ($algorithm,$key,undef,$textmode) = /use Filter\:\:CBC\s*[\'\"](\w+)[\'\"]\s*\,\s*[\'\"]([^\'\"]*)[\'\"](\,[\'\"](\w+)[\'\"])?/; }
-  if ($algorithm && $key && !$past_use) { $past_use++; push(@code ,$_); next;}
-  if ($past_use && $key && $algorithm)
+{ $|++;
+  if (!$past_use)
+  { ($algorithm,$key,undef,$textmode) = /use Filter\:\:CBC\s*[\'\"](\w*)[\'\"]\s*\,\s*[\'\"]([^\'\"]*)[\'\"](\,[\'\"](\w*)[\'\"])?/; }
+  if (defined $algorithm && defined $key && !$past_use) { $past_use++; push(@code ,$_); next;}
+  if ($past_use && defined $key && defined $algorithm)
   { my (@foo) = <F>;
     unshift (@foo,$_);
     my $code = join("",@foo);
+    $algorithm ||= "Rijndael";
+    $algorithm = $Algorithms{uc $algorithm} || $algorithm;
+    $key ||= "This space is left blank intentionally";
     if ($code =~ /\;/)
     { my $cipher = new Crypt::CBC($key,$algorithm);
       $code = $cipher->encrypt($code);
       if ($textmode eq "hex") { $code = unpack("H*",$code); }
-      open(OUTFILE,">$0") || die $!;
+      open(OUTFILE,">$0.bak") || die $!;
       print OUTFILE @code,$code;
       close(OUTFILE);
+      unlink("$0") || die $!;
+      rename ("$0.bak",$0);
       exit;
     }
   } 
@@ -76,12 +94,26 @@ Filter::CBC - Source filter for Cipher Block Chaining
   -or-
 
   # Please don't encrypt me!
-  
+
   use Filter::CBC "Rijndael","my secret key","hex";
 
   # This file will be encrypted and overwritten.
   # Make backups, damnit!
-  # Autoencryption example
+  # Autofilter example
+  print "Don't try this at home, kids !";
+
+  -or-
+
+  # Please don't encrypt me!
+
+  use Filter::CBC "","","hex";
+
+  # This file will be encrypted and overwritten.
+  # Make backups, damnit!
+  # Autofilter example
+  # Defaults will be used
+  # Rijndael is default encryption algorithm
+  # Default keyphrase is : This space is left blank intentionally
   print "Don't try this at home, kids !";
 
 
@@ -93,12 +125,12 @@ output. The textmode bypasses this obstacle, by converting the data to less scar
 
 =head1 DOWNSIDES
 
-Speed
-
+=item *
 Source filters are slow. VERY Slow. Filter::CBC is not an exception.
 Well uhm kinda. Filter::CBC is even slower. Be warned, be VERY VERY warned.
 
-You're source file is overwrittten when you're using the autoencrypt feature.
+=item *
+You're source file is overwrittten when you're using the autoefilter feature.
 
 
 =head1 PARAMETERS
@@ -181,9 +213,11 @@ parameter first. Source filters can't handle binary data properly.
 
 =item uudecode
 
+uudecoding has been disabled in the current source tree.
+
 If the encrypted code is uuencoded, you need to use this parameter first. 
 Source filters can't handle binary data properly. Using this textmode is not 
-recommended since the autoencryption feature scans for keys which also are used 
+recommended since the autofilter feature scans for keys which also are used 
 in the uudecode algorithm.
 
 =back
@@ -200,21 +234,45 @@ for hex converted encrypted code.
 
   52616e646f6d4956d6da837a7590d113f67d363b95eae044ac74937c2b7fc9dbaffb59656abebf5b69a50559bc9b4233
 
-=head1 AUTOENCRYPTION
+=head1 AUTOFILTERING
 
 Since Filter::CBC 0.04, using code2cbc isn't required anymore. Filter::CBC can encrypt your code
-on the fly if it's not yet encrypted. Be warned that your source file is overwritten and decrypting it
-be turn out to be a challenge to a novice. BACKUP!
+on the fly if it's not yet encrypted. Be warned that your source file is overwritten. You can use
+cbc2code.pl to decrypt your encrypted code. BACKUP!
 
   use Filter::CBC "Rijndael","my secret key","hex";
 
   # This file will be encrypted and overwritten.
   # Make backups, damnit!
-  # Autoencryption example
+  # Autofilter example
   print "Don't try this at home, kids !";
 
 This code will be encrypted the first time you run it. Everything before the 'use Filter::CBC' line is kept
 intact.
+
+=head1 DEFAULTS
+
+=over 3
+
+=item Encryption routine
+
+=back
+
+Filter::CBC will use Rijndael when no encryption algorithm is defined.
+
+=over 3
+
+=item Keyphrase
+
+=back
+
+Filter::CBC will use the following line when no keyphrase is defined :
+
+=over 5
+
+    This space is left blank intentionally
+
+=back
 
 =head1 REQUIREMENTS
 
@@ -264,11 +322,11 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.04.
+This is Filter::CBC 0.05.
 
 =head1 AUTHOR
 
-Hendrik Van Belleghem (beatnik@quickndirty.org)
+Hendrik Van Belleghem (beatnik -at- quickndirty -dot- org)
 
 =head1 SEE ALSO
 
