@@ -18,7 +18,7 @@ my %Ciphers =
  "TEA"=>"TEA",
  "TWOFISH"=>"Twofish",);
 
-$VERSION = '0.07';
+$VERSION = '0.08';
 
 my $blank = "This space is left blank intentionally";
 
@@ -58,6 +58,7 @@ filter_add(bless $ref) ;
 sub filter {
 my ($self) = @_ ;
 my ($status) ;
+local $/ = undef;
 if (($status = filter_read()) > 0)
 { $_ = $cipher->decrypt($_);
 }
@@ -295,7 +296,7 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.07
+This is Filter::CBC 0.08
 
 =head1 AUTHOR
 

@@ -28,3 +28,6 @@ Revision history for Perl extension Filter::CBC.
         - Added example code (Serpent, RC6)
 	- Fixed POD
 	- Moved autofiltering to import block
+	
+0.08  Fri Dec  14 20:40:00 2001
+	- Removed horrible bug that screwed up on newlines
