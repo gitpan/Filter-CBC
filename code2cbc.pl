@@ -1,5 +1,12 @@
 #!/usr/bin/perl
 
+# CBC2CODE
+# This small script will encrypt your plain code with the algorithm 
+# and key provided. 
+# Using uudecode as textmode is NOT recommded !
+
+# This script is part of Filter::CBC. Same license rules apply.
+
 use strict;
 use Crypt::CBC;
 
@@ -35,6 +42,6 @@ open(OUTFILE,">$file.out") || die $!;
 print OUTFILE "#Initialize stuff here\n\n";
 print OUTFILE "use Filter::CBC '$algo','$key'";
 if ($text) { print OUTFILE ",'$text'"; }
-print OUTFILE ";\n\n";
+print OUTFILE ";\n";
 print OUTFILE $code;
 close(OUTFILE);

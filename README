@@ -1,4 +1,4 @@
-README for Filter::CBC 0.03
+README for Filter::CBC 0.04
 
 WHATIS
 
@@ -24,6 +24,30 @@ or manually by untarring the archive and running the following commands.
 TESTING
 
 This module has been tested on Linux 2.2.x (x86) with Perl 5.005_03.
+
+
+EXAMPLES & SCRIPTS
+
+Examples are included for all the CBC compatible encryption routines.
+
+The code2cbc.pl script can encrypt your code by asking a number of simple
+questions. The autoencryption feature does the same thing, without the
+questions.
+
+The cbc2code.pl script can decrypt encrypted scripts.
+
+
+AUTOENCRYPTION
+
+Filter::CBC can now encrypt your source code on the fly (similar to
+Acme::Bleach). Just add 
+
+use Filter::CBC 'Rijndael','my secret key','hex';
+
+above the chunk you want to encrypt et voila.
+Change the use statement according to your requirements and run it.
+Filter::CBC will now encrypt the source and exit. Your code will not
+be executed at that time. PLEASE backup your code before running it.
 
 
 REQUIREMENTS

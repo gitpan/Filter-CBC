@@ -1,8 +1,11 @@
+BUGS
 CBC.pm
 Changes
 Makefile.PL
 MANIFEST
+cbc2code.pl
 code2cbc.pl
+examples/autoencrypt.pl
 examples/blowfish.pl
 examples/des_ede3.pl
 examples/des.pl

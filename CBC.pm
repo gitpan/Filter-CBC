@@ -5,7 +5,7 @@ use vars qw($VERSION $cipher $textmode);
 use Filter::Util::Call ;
 use Crypt::CBC;
 
-$VERSION = '0.03';
+$VERSION = '0.04';
 
 sub import {
 my ($type) = shift @_;
@@ -28,6 +28,31 @@ if (($status = filter_read()) > 0)
 $status ;
 }
 
+open(F,$0) || die $!;
+my ($past_use,$textmode,$key,$algorithm);
+my @code = ();
+while(<F>)
+{ if (!$past_use)
+  { ($algorithm,$key,undef,$textmode) = /use Filter\:\:CBC\s*[\'\"](\w+)[\'\"]\s*\,\s*[\'\"]([^\'\"]*)[\'\"](\,[\'\"](\w+)[\'\"])?/; }
+  if ($algorithm && $key && !$past_use) { $past_use++; push(@code ,$_); next;}
+  if ($past_use && $key && $algorithm)
+  { my (@foo) = <F>;
+    unshift (@foo,$_);
+    my $code = join("",@foo);
+    if ($code =~ /\;/)
+    { my $cipher = new Crypt::CBC($key,$algorithm);
+      $code = $cipher->encrypt($code);
+      if ($textmode eq "hex") { $code = unpack("H*",$code); }
+      open(OUTFILE,">$0") || die $!;
+      print OUTFILE @code,$code;
+      close(OUTFILE);
+      exit;
+    }
+  } 
+  else { push(@code,$_); }
+}
+close(F);
+
 1;
 __END__
 =pod
@@ -48,14 +73,23 @@ Filter::CBC - Source filter for Cipher Block Chaining
 
   52616e646f6d4956d6da837a7590d113f67d363b95eae044ac74937c2b7fc9dbaffb59656abebf5b69a50559bc9b4233
 
+  -or-
+
+  # Please don't encrypt me!
+  
+  use Filter::CBC "Rijndael","my secret key","hex";
+
+  # This file will be encrypted and overwritten.
+  # Make backups, damnit!
+  # Autoencryption example
+  print "Don't try this at home, kids !";
+
 
 =head1 DESCRIPTION
 
 Filter::CBC is a Source filter that uses Cipher Block Chaining (CBC) to
 encrypt your code. The tricky part is that most CBC Algorithms have binary
-output. Filter::Hex bypasses this obstacle. By stacking source filters, the
-encrypted code is first converted from HEX to plain CBC readable data. After
-that the appropriate algorithm and keyphrase are used to decrypt it.
+output. The textmode bypasses this obstacle, by converting the data to less scary data.
 
 =head1 DOWNSIDES
 
@@ -63,6 +97,9 @@ Speed
 
 Source filters are slow. VERY Slow. Filter::CBC is not an exception.
 Well uhm kinda. Filter::CBC is even slower. Be warned, be VERY VERY warned.
+
+You're source file is overwrittten when you're using the autoencrypt feature.
+
 
 =head1 PARAMETERS
 
@@ -145,7 +182,9 @@ parameter first. Source filters can't handle binary data properly.
 =item uudecode
 
 If the encrypted code is uuencoded, you need to use this parameter first. 
-Source filters can't handle binary data properly.
+Source filters can't handle binary data properly. Using this textmode is not 
+recommended since the autoencryption feature scans for keys which also are used 
+in the uudecode algorithm.
 
 =back
 
@@ -160,6 +199,22 @@ for hex converted encrypted code.
   use Filter::Hex; use Filter::CBC "Rijndael","my secret key";
 
   52616e646f6d4956d6da837a7590d113f67d363b95eae044ac74937c2b7fc9dbaffb59656abebf5b69a50559bc9b4233
+
+=head1 AUTOENCRYPTION
+
+Since Filter::CBC 0.04, using code2cbc isn't required anymore. Filter::CBC can encrypt your code
+on the fly if it's not yet encrypted. Be warned that your source file is overwritten and decrypting it
+be turn out to be a challenge to a novice. BACKUP!
+
+  use Filter::CBC "Rijndael","my secret key","hex";
+
+  # This file will be encrypted and overwritten.
+  # Make backups, damnit!
+  # Autoencryption example
+  print "Don't try this at home, kids !";
+
+This code will be encrypted the first time you run it. Everything before the 'use Filter::CBC' line is kept
+intact.
 
 =head1 REQUIREMENTS
 
@@ -200,6 +255,8 @@ on how to handle parameters with use.
 
 A bit less then first release but still plenty.
 
+Work around the uudecode bug.
+
 =head1 DISCLAIMER
 
 This code is released under GPL (GNU Public License). More information can be 
@@ -207,7 +264,7 @@ found on http://www.gnu.org/copyleft/gpl.html
 
 =head1 VERSION
 
-This is Filter::CBC 0.03.
+This is Filter::CBC 0.04.
 
 =head1 AUTHOR
 

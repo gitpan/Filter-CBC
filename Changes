@@ -11,3 +11,7 @@ Revision history for Perl extension Filter::CBC.
 	- Cleaned up Package to improve CPANability
         - Added some CBC Cipher examples
 	- Cleaned up and updated POD
+
+0.04  Thu Nov  8 17:00:00 2001
+	- Added autoencryption feature (BIG CHANGE)
+        - Added cbc2code script
