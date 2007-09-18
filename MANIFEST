@@ -1,11 +1,10 @@
-BUGS
-CBC.pm
 Changes
 Makefile.PL
 MANIFEST
 README
-cbc2code.pl
-test.pl
+t/Filter-CBC.t
+lib/Filter/CBC.pm
+examples/cbc2code.pl
 examples/autofilter.pl
 examples/blowfish.pl
 examples/defaults.pl
@@ -18,5 +17,4 @@ examples/rc6.pl
 examples/rijndael.pl
 examples/tea.pl
 examples/twofish.pl
-obsolete/Hex.pm
-obsolete/code2cbc.pl
+META.yml                                 Module meta-data (added by MakeMaker)

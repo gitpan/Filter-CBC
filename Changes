@@ -35,3 +35,6 @@ Revision history for Perl extension Filter::CBC.
 0.09  Thu Feb  14 21:00:00 2002
 	- Fixed \x bug again
 	- Fixed NULL example 
+
+0.10  Tue Sep 18 17:30:00 2007
+         - Fixed Salt bug for newer versions of Crypt::CBC

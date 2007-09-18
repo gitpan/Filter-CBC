@@ -18,7 +18,7 @@ my %Ciphers =
  "TEA"=>"TEA",
  "TWOFISH"=>"Twofish",);
 
-$VERSION = '0.09';
+$VERSION = '0.10';
 
 my $blank = "This space is left blank intentionally";
 
@@ -28,7 +28,7 @@ my $algorithm = shift || "Rijndael";
 $algorithm = $Ciphers{uc $algorithm} || $algorithm;
 my $key = shift || $blank;
 my ($ref) = [];
-$cipher = new Crypt::CBC($key,$algorithm);
+$cipher = Crypt::CBC->new(-key => $key,-cipher => $algorithm);
 if (defined $algorithm && defined $key)
 { open(F,"<$0") || die $!;
   flock(F,2); seek(F,0,0);
@@ -98,6 +98,14 @@ Filter::CBC - Source filter for Cipher Block Chaining
   # Rijndael is default encryption algorithm
   # Default keyphrase is : This space is left blank intentionally
   print "Don't try this at home, kids !";
+
+  -or-
+
+  BEGIN { use LWP::Simple; my $key = get("http://www.somesite.com/key.txt"); }
+  
+  use Filter::CBC "Rijndael",$key;
+
+  secretstuff();
 
 =head1 DESCRIPTION
 
